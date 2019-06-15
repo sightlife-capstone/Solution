@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="description" content="SightLife & Capstone B11 Excelerators partner solution" />
+    <meta name="author" content="B11 Excelerators, SightLife but they didn't actually write anything" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Home </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+        <form action="/" method="POST"> 
+            {% csrf_token %}
+            <input class="btn pl-1 pt-1" name="Chinese" type="submit" value="中文" />
+        </form>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <h2 class="py-3">  SightLife Global Team  </h2>
+    </header>
+    <main>
+        <form>
+            <button class="btn px-3" formaction="{% url 'admin:index' %}">SightLife</button>
+            <button class="btn px-3" formaction="{% url 'main:signin' %}">Partner</button>
+            {% if request.user.is_staff %}
+            <button class="btn px-3" formaction="{% url 'main:additions' %}">Add Eyebank</button>
+            {% endif %}
+        </form>
+    </main>
+</body>
+
+
+</html>

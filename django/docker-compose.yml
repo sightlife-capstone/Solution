@@ -1,0 +1,14 @@
+version: '2.1'
+
+services:
+  solution:
+    image: sightlifedatasubmission.azurecr.io/capstone:latest1.4
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}

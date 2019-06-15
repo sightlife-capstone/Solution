@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta name="description" content="SightLife & Capstone B11 Excelerators partner solution" />
+    <meta name="author" content="B11 Excelerators, SightLife but they didn't actually write anything" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 提交数据 </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+</head>
+<body>
+    <header>
+    </header>
+    <main>
+        <div class="container">
+        <form action='/form' method='POST'>
+            {% csrf_token %}
+
+            {% load crispy_forms_tags %}
+
+            <h1 align="center">请选择您的组织以及您要提交数据的日期范围</h1>
+            {{ form1|crispy }}
+
+            <h2 align="center" class="text-danger"><u>报告需要这些字段</u></h2>
+            {{ form2|crispy }}
+            
+            <h3 align="center" class="text-danger"><u>这些字段是更详细的数据，不需要提交</u></h3>
+            <h3 align="center">I. 来自HCRP医院的死亡和死亡通知</h3>
+            {{ form3|crispy }}
+
+            <h3 align="center">II. 潜在捐献者和同意捐献者- HCRP</h3>
+            {{ form4|crispy }}
+            
+            <h3 align="center">III. 组织收集</h3>
+            {{ form5|crispy }}
+
+            <h3 align="center">IV. 为移植目的而收集的眼组织质量的合格与适宜性</h3  >
+            {{ form6|crispy }}
+
+            <h3 align="center">V. 组织分配</h3 >
+            {{ form7|crispy }}
+             
+            <h3 align="center">Eligibility and suitability for tissues recovered with intent for surgical use</h3>
+            <h4 align="center">A. Reasons donor tissue is not eligible for transplantation</h4>
+            {{ form8|crispy }}
+
+            <h4 align="center">B. Reasons corneas are not suitable for transplantation</h4>
+            {{ form9|crispy }}
+
+            <h3 align="center">Corneas suitable but not transplanted</h3>
+            <h4 align="center">Reasons eligible/suitable tissue was not transplanted</h4>
+            {{ form10|crispy }}
+
+            <h3 align="center">Social Return</h3>
+            {{ form11|crispy }}
+
+            <h3 align="center">Indications for Penetrating Keratoplasty or keratoprosthesis</h3>
+            {{ form12|crispy }}
+            
+            {% if request.user.is_staff %}
+            <h2 align="center" class="text-danger"><u>这些字段仅供SightLife使用。 不要填写！</u></h2>
+            {{ form13|crispy }}
+            {% endif %}
+
+            <input type='submit' class="btn btn-success" value='递交' align="center"/>
+        </form>
+    </div>
+    </main>
+</body>
+
+</html>

@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   solution:
-    image: sightlifedatasubmission.azurecr.io/capstone:latest1.4
+    image: sightlifedatasubmission.azurecr.io/capstone:latest2.0
     build: .
     ports:
       - 8000:8000

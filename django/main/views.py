@@ -4,6 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db import connection
+from django.core.mail import send_mail
+from django.conf import settings
 from calendar import monthrange
 import pycountry
 from .forms import (
@@ -161,7 +163,7 @@ def form(request):
             start_date = str(year) + "-" + str(month) + "-" + str(start_day)
             end_date = str(year) + "-" + str(month) + "-" + str(end_day)
         
-            # Assuming we use the exact label from the field for the name in the database, iterate over all the fields in the form
+            # # Assuming we use the exact label from the field for the name in the database, iterate over all the fields in the form
             for field in form:
                 # Ignore the first fields in the form for they are metadata that is not being submitted
                 if field.name == "partner" or field.name == "month" or field.name == "year" or field.name == "date_range":
@@ -243,13 +245,34 @@ def form(request):
                     metric_id = cursor.fetchone()[0]
                     try:
                         cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
-                            [consent_rate, eyebank_id, metric_id, start_date, end_date]
+                            [edc_productivity, eyebank_id, metric_id, start_date, end_date]
                         )
                     except:
                         cursor.execute("INSERT INTO eyebank_metric (eyebankid, metricid, measure, startdate, enddate) VALUES (%s, %s, %s, %s, %s)",
                             [eyebank_id, metric_id, edc_productivity, start_date, end_date]
                         )
-           
+
+            # Compute the rate information for overall translpant utilization
+            if form.cleaned_data["total_collected_transplant"] is not None and form.cleaned_data["total_distributed"] is not None:
+                if form.cleaned_data["total_distributed"] != 0:
+                    total_utilization = form.cleaned_data["total_collected_transplant"] / form.cleaned_data["total_distributed"]
+                    cursor.execute("SELECT metric.metricid FROM metric WHERE metricname = %s;", ["Overall Transplant Utilization Rate"])
+                    metric_id = cursor.fetchone()[0]
+                    try:
+                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
+                            [total_utilization, eyebank_id, metric_id, start_date, end_date]
+                        )
+                    except:
+                        cursor.execute("INSERT INTO eyebank_metric (eyebankid, metricid, measure, startdate, enddate) VALUES (%s, %s, %s, %s, %s)",
+                            [eyebank_id, metric_id, total_utilization, start_date, end_date]
+                        )
+
+            # Get short and full name for eyebank that is submitting data and pass it to the email function
+            cursor.execute("SELECT eye_bank.eyebankshortname, eye_bank.eyebankfullname FROM eye_bank WHERE eyebankid = %s;", [eyebank_id])
+            eyebank = cursor.fetchone()
+            eyebank_shortname = eyebank[0]
+            eyebank_fullname = eyebank[1]
+            email(eyebank_shortname, eyebank_fullname)
             cursor.close()
             # Return a success a link to logout the user
             response = HttpResponse()
@@ -264,6 +287,14 @@ def form(request):
             messages.error(request, "Error submitting the form", extra_tags="alert alert-warning")
     else:
         messages.error(request, "Method not allowed on /form", extra_tags="alert alert-warning")
+
+# Helping function that sends an email to a mailbox that notifies when any data is submitted in the form and for what eyebank it was submitted for
+def email(eyebank_shortname, eyebank_fullname):
+    subject = "New Data Submitted For: " + str(eyebank_fullname)
+    message = "A new data submission has been made for " + str(eyebank_shortname)
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list =["nshytrek@gmail.com",]# ["eyebankdevelopment@sightlife.org",]
+    send_mail(subject, message, email_from, recipient_list)
 
 def signout(request):
     '''Signs out a user if they are logged into the system'''
@@ -298,7 +329,7 @@ def additions(request):
                 data = cursor.fetchone()
                 if data is None:
                     cursor.execute("INSERT INTO country (partnergroupid, countryname) VALUES (%s, %s);", 
-                        [partner_group_id, form.cleaned_data["country"]]
+                        [partner_group_id, country_name]
                     )
             # Get the country id from the database
             cursor.execute("SELECT countryid FROM country WHERE countryname = %s;", [country_name])

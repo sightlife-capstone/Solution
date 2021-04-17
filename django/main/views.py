@@ -172,14 +172,14 @@ def form(request):
                 elif form.cleaned_data[field.name] is not None:
                     cursor.execute("SELECT metric.metricid FROM Metric WHERE metricname=%s;", [field.label])
                     data = cursor.fetchall()
-                    try: # if data has been already submitted for a field, update it
-                        cursor.execute("UPDATE eyebank_metric SET measure = %s, startdate = %s, enddate = %s WHERE eyebankid = %s AND metricid= %s;", 
-                            [form.cleaned_data[field.name], start_date, end_date, eyebank_id, data[0][0]]
-                        )
-                    except: # If the data has not yet been submitted for a field, insert it
-                        cursor.execute("INSERT INTO eyebank_metric (eyebankid, metricid, measure, startdate, enddate) VALUES (%s, %s, %s, %s, %s)",
-                                        [eyebank_id, data[0][0], form.cleaned_data[field.name], start_date, end_date]
-                        )
+                    # try: # if data has been already submitted for a field, update it
+                    #     cursor.execute("UPDATE eyebank_metric SET measure = %s, startdate = %s, enddate = %s WHERE eyebankid = %s AND metricid= %s;", 
+                    #         [form.cleaned_data[field.name], start_date, end_date, eyebank_id, data[0][0]]
+                    #     )
+                    # except: # If the data has not yet been submitted for a field, insert it
+                    cursor.execute("INSERT INTO eyebank_metric (eyebankid, metricid, measure, startdate, enddate) VALUES (%s, %s, %s, %s, %s)",
+                                    [eyebank_id, data[0][0], form.cleaned_data[field.name], start_date, end_date]
+                    )
 
             # Compute the rate information for hcrp utilization
             if form.cleaned_data["hcrp_donor_tissue"] is not None and form.cleaned_data["corneas_hcrp"] is not None:

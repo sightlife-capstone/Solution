@@ -11,34 +11,34 @@ import pycountry
 from .forms import (
     SigninForm,
     NewEyebankForm,
-    partnerMetricMetaData, 
+    partnerMetricMetaData,
     TotalCorneasCollected,
-    DeathAndDeathNotifications, 
-    PotentialDonorsAndConsent, 
+    DeathAndDeathNotifications,
+    PotentialDonorsAndConsent,
     TissueRecoveryAndCollection,
     EligibilityAndSuitabilityRecoveredTissues,
-    TissueDistribution, 
-    ReasonsTisueNotEligibleTransplantation, 
-    ReasonsCorneasNotSuitableTransplantation, 
-    CorneasSuitableNotTransplanted, 
-    SocialReturn, 
+    TissueDistribution,
+    ReasonsTisueNotEligibleTransplantation,
+    ReasonsCorneasNotSuitableTransplantation,
+    CorneasSuitableNotTransplanted,
+    SocialReturn,
     IndicationsForTransplantation,
     GoalsForm,
     MasterForm
 )
 from .cnforms import (
     SigninFormCN,
-    partnerMetricMetaDataCN, 
+    partnerMetricMetaDataCN,
     TotalCorneasCollectedCN,
-    DeathAndDeathNotificationsCN, 
-    PotentialDonorsAndConsentCN, 
+    DeathAndDeathNotificationsCN,
+    PotentialDonorsAndConsentCN,
     TissueRecoveryAndCollectionCN,
     EligibilityAndSuitabilityRecoveredTissuesCN,
-    TissueDistributionCN, 
-    ReasonsTisueNotEligibleTransplantationCN, 
-    ReasonsCorneasNotSuitableTransplantationCN, 
-    CorneasSuitableNotTransplantedCN, 
-    SocialReturnCN, 
+    TissueDistributionCN,
+    ReasonsTisueNotEligibleTransplantationCN,
+    ReasonsCorneasNotSuitableTransplantationCN,
+    CorneasSuitableNotTransplantedCN,
+    SocialReturnCN,
     IndicationsForTransplantationCN
 )
 
@@ -139,7 +139,7 @@ def form(request):
                                              'form11' : form11,
                                              'form12' : form12,
                                              'form13' : form13}, status=200)
-    
+
     elif request.method == "POST":
         form = MasterForm(request.POST)
         if form.is_valid():
@@ -162,7 +162,7 @@ def form(request):
                 end_day = 15
             start_date = str(year) + "-" + str(month) + "-" + str(start_day)
             end_date = str(year) + "-" + str(month) + "-" + str(end_day)
-        
+
             # # Assuming we use the exact label from the field for the name in the database, iterate over all the fields in the form
             for field in form:
                 # Ignore the first fields in the form for they are metadata that is not being submitted
@@ -173,7 +173,7 @@ def form(request):
                     cursor.execute("SELECT metric.metricid FROM Metric WHERE metricname=%s;", [field.label])
                     data = cursor.fetchall()
                     # try: # if data has been already submitted for a field, update it
-                    #     cursor.execute("UPDATE eyebank_metric SET measure = %s, startdate = %s, enddate = %s WHERE eyebankid = %s AND metricid= %s;", 
+                    #     cursor.execute("UPDATE eyebank_metric SET measure = %s, startdate = %s, enddate = %s WHERE eyebankid = %s AND metricid= %s;",
                     #         [form.cleaned_data[field.name], start_date, end_date, eyebank_id, data[0][0]]
                     #     )
                     # except: # If the data has not yet been submitted for a field, insert it
@@ -188,7 +188,7 @@ def form(request):
                     cursor.execute("SELECT metric.metricid FROM metric WHERE metricname = %s;", ["HCRP Utilization Rate"])
                     metric_id = cursor.fetchone()[0]
                     try:
-                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
+                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;",
                             [hcrp_utilization_rate, eyebank_id, metric_id, start_date, end_date]
                         )
                     except:
@@ -202,7 +202,7 @@ def form(request):
                     cursor.execute("SELECT metric.metricid FROM metric WHERE metricname = %s;", ["Notification Rate"])
                     metric_id = cursor.fetchone()[0]
                     try:
-                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
+                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;",
                             [notifications_rate, eyebank_id, metric_id, start_date, end_date]
                         )
                     except:
@@ -216,7 +216,7 @@ def form(request):
                     cursor.execute("SELECT metric.metricid FROM metric WHERE metricname = %s;", ["Suitability Rate"])
                     metric_id = cursor.fetchone()[0]
                     try:
-                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
+                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;",
                             [suitability_rate, eyebank_id, metric_id, start_date, end_date]
                         )
                     except:
@@ -230,7 +230,7 @@ def form(request):
                     cursor.execute("SELECT metric.metricid FROM metric WHERE metricname = %s;", ["Consent Rate"])
                     metric_id = cursor.fetchone()[0]
                     try:
-                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
+                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;",
                             [consent_rate, eyebank_id, metric_id, start_date, end_date]
                         )
                     except:
@@ -244,7 +244,7 @@ def form(request):
                     cursor.execute("SELECT metric.metricid FROM metric WHERE metricname = %s;", ["EDC Productivity"])
                     metric_id = cursor.fetchone()[0]
                     try:
-                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
+                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;",
                             [edc_productivity, eyebank_id, metric_id, start_date, end_date]
                         )
                     except:
@@ -259,7 +259,7 @@ def form(request):
                     cursor.execute("SELECT metric.metricid FROM metric WHERE metricname = %s;", ["Overall Transplant Utilization Rate"])
                     metric_id = cursor.fetchone()[0]
                     try:
-                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;", 
+                        cursor.execute("UPDATE eyebank_metric SET measure = %s WHERE eyebankid = %s AND metricid = %s AND startdate = %s AND enddate = %s;",
                             [total_utilization, eyebank_id, metric_id, start_date, end_date]
                         )
                     except:
@@ -328,7 +328,7 @@ def additions(request):
                 cursor.execute("SELECT * FROM country WHERE countryname = %s", [country_name])
                 data = cursor.fetchone()
                 if data is None:
-                    cursor.execute("INSERT INTO country (partnergroupid, countryname) VALUES (%s, %s);", 
+                    cursor.execute("INSERT INTO country (partnergroupid, countryname) VALUES (%s, %s);",
                         [partner_group_id, country_name]
                     )
             # Get the country id from the database
@@ -336,11 +336,11 @@ def additions(request):
             countryid = cursor.fetchone()[0]
             # Insert the new eyebank into the database
             try:
-                cursor.execute("UPDATE eye_bank SET countryid = %s , eyebankshortname = %s , eyebankfullname = %s WHERE OR eyebankshortname = %s OR eyebankfullname = %s;", 
+                cursor.execute("UPDATE eye_bank SET countryid = %s , eyebankshortname = %s , eyebankfullname = %s WHERE (eyebankshortname = %s OR eyebankfullname = %s);", 
                     [countryid, form.cleaned_data["short_name"], form.cleaned_data["full_name"], form.cleaned_data["short_name"], form.cleaned_data["full_name"]]
                 )
             except:
-                cursor.execute("INSERT INTO eye_bank (countryid, eyebankshortname, eyebankfullname) VALUES (%s, %s, %s);", 
+                cursor.execute("INSERT INTO eye_bank (countryid, eyebankshortname, eyebankfullname) VALUES (%s, %s, %s);",
                     [countryid, form.cleaned_data["short_name"], form.cleaned_data["full_name"]]
                 )
             cursor.close()
